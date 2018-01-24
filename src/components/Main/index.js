@@ -12,16 +12,16 @@ export default class Main extends Component {
   render() {
     const note = this.props.activeNote;
     return (
-      <div className="main-content w-75 fl">
+      <div className="main-content w-80 fl">
         <input
           type="text"
-          className="fr pa1 ba b--black-10 br-pill bg-transparent"
+          className="fr pa1 ma3 ba b--black-10 br-pill bg-transparent"
           placeholder="Search"
         />
         <input
           type="text"
           value={note}
-          className="w-100 pa2 bn pa2 bg-transparent"
+          className="w-100 pa3 bn pa2 bg-transparent"
           placeholder="Write notes here plz"
           onChange={this.handleChange}
         />

@@ -1,20 +1,32 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 
 export default class Sidebar extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {};
+    this.handleChange = this.handleChange.bind(this);
   }
-  onClick = () => {
-    alert("CLICKED");
-  };
+  handleChange(e) {
+    this.props.handleNoteChange(e);
+  }
   render() {
     return (
-      <div className="fl w-25 br b--black-05 vh-100 sidebar">
+      <div className="fl w-20 br b--black-05 vh-100 sidebar">
         <ul className="pa0">
           <h2>Notes</h2>
-          <button onClick={this.onClick} type="button">
-            Link
-          </button>
+          {this.props.notes.data.map(function(note) {
+            return (
+              <li key={note.id}>
+                <button
+                  className="link pointer w-100 bb-0 br-0 bl-0 bg-transparent bt b--black-05  hover-white"
+                  onClick={() => this.handleChange(note.name)}
+                >
+                  {note.name}
+                </button>
+              </li>
+            );
+          }, this)}
         </ul>
       </div>
     );
