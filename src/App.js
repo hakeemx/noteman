@@ -9,12 +9,14 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      activeNote: '',
-      notes: {},
+      activeNote: { text: '' },
+      notes: { text: '' },
       loaded: false
     };
+
     this.handleNoteChange = this.handleNoteChange.bind(this);
     this.fetchData = this.fetchData.bind(this);
+    this.updateData = this.updateData.bind(this);
   }
   fetchData() {
     let that = this;
@@ -24,6 +26,9 @@ export default class App extends Component {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     };
+    axios.defaults.headers.post['Content-Type'] =
+      'application/x-www-form-urlencoded';
+
     axios
       .get('notes')
       .then(function(response) {
@@ -36,13 +41,44 @@ export default class App extends Component {
         // console.log(error);
       });
   }
+  updateData() {
+    const { activeNote } = this.state;
+    console.log(activeNote);
+    //this.setState({ activeNote: { ...this.activeNote.todo, [name]: value } });
+
+    if (activeNote.text !== '') {
+      console.log(`/notes/${activeNote.id}`);
+      // axios
+      //   .put(`/notes/${activeNote.id}`, {
+      //     text: activeNote.text
+      //   })
+      //   .then(function(response) {
+      //     console.log(response);
+      //   })
+      //   .catch(function(error) {
+      //     console.log(error.response);
+      //   });
+    }
+  }
   componentDidMount() {
     this.fetchData();
+
+    //Update every 10 seconds
+    setInterval(() => {
+      //this.updateData();
+    }, 1000);
   }
   handleNoteChange(note) {
-    this.setState({
-      activeNote: note
-    });
+    // console.log(note);
+    this.setState(
+      {
+        activeNote: { text: note }
+      },
+      () => {
+        console.log(this.state.activeNote);
+      }
+    );
+    // console.log(this.state.activeNote);
   }
   render() {
     const { loaded } = this.state;
@@ -62,6 +98,7 @@ export default class App extends Component {
           </div>
         )}
         <Main
+          updateData={this.updateData}
           handleNoteChange={this.handleNoteChange}
           activeNote={this.state.activeNote}
         />

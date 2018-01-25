@@ -4,7 +4,6 @@ export default class Sidebar extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
     this.handleChange = this.handleChange.bind(this);
   }
   handleChange(e) {
@@ -19,8 +18,8 @@ export default class Sidebar extends Component {
             return (
               <li key={note.id}>
                 <button
-                  className="link pointer w-100 bb-0 br-0 bl-0 bg-transparent bt b--black-05  hover-white"
-                  onClick={() => this.handleChange(note.name)}
+                  className="link pointer w-100 bb-0 br-0 bl-0 bg-transparent bt b--black-05 pa2 hover-white"
+                  onClick={() => this.handleChange(note)}
                 >
                   {note.name}
                 </button>

@@ -8,9 +8,10 @@ export default class Main extends Component {
   }
   handleChange(e) {
     this.props.handleNoteChange(e.target.value);
+    console.log(this.props.activeNote.text);
   }
   render() {
-    const note = this.props.activeNote;
+    const note = this.props.activeNote.text;
     return (
       <div className="main-content w-80 fl">
         <input
