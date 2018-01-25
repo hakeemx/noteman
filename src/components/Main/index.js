@@ -5,13 +5,18 @@ export default class Main extends Component {
     super(props);
     //console.log(props);
     this.handleChange = this.handleChange.bind(this);
+    this.onFocus = this.onFocus.bind(this);
   }
   handleChange(e) {
-    this.props.handleNoteChange(e.target.value);
-    console.log(this.props.activeNote.text);
+    var text = e.target.value;
+    this.props.handleNoteChange({ text });
+  }
+  onFocus(note) {
+    //this.props.onFocus(note);
   }
   render() {
-    const note = this.props.activeNote.text;
+    const { activeNote } = this.props;
+    //console.log(activeNote);
     return (
       <div className="main-content w-80 fl">
         <input
@@ -21,7 +26,8 @@ export default class Main extends Component {
         />
         <input
           type="text"
-          value={note}
+          value={activeNote.text}
+          onFocus={() => this.onFocus(activeNote)}
           className="w-100 pa3 bn pa2 bg-transparent"
           placeholder="Write notes here plz"
           onChange={this.handleChange}

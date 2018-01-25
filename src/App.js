@@ -9,7 +9,7 @@ export default class App extends Component {
     super(props);
 
     this.state = {
-      activeNote: { text: '' },
+      activeNote: { text: '', id: '' },
       notes: { text: '' },
       loaded: false
     };
@@ -17,6 +17,11 @@ export default class App extends Component {
     this.handleNoteChange = this.handleNoteChange.bind(this);
     this.fetchData = this.fetchData.bind(this);
     this.updateData = this.updateData.bind(this);
+    this.postData = this.postData.bind(this);
+    this.NoteInputFocus = this.NoteInputFocus.bind(this);
+    this.createNote = this.createNote.bind(this);
+    this.setId = this.setId.bind(this);
+    this.sideNoteLinkClick = this.sideNoteLinkClick.bind(this);
   }
   fetchData() {
     let that = this;
@@ -33,7 +38,7 @@ export default class App extends Component {
       .get('notes')
       .then(function(response) {
         that.setState({
-          notes: response,
+          notes: response.data,
           loaded: true
         });
       })
@@ -43,22 +48,32 @@ export default class App extends Component {
   }
   updateData() {
     const { activeNote } = this.state;
-    console.log(activeNote);
-    //this.setState({ activeNote: { ...this.activeNote.todo, [name]: value } });
+    //this.setState({ activeNote: { ...this.activeNote.todo, [name]: value } })
+    //console.log('Id: ', data.id);
+    console.log('State: ', activeNote);
 
-    if (activeNote.text !== '') {
-      console.log(`/notes/${activeNote.id}`);
-      // axios
-      //   .put(`/notes/${activeNote.id}`, {
-      //     text: activeNote.text
-      //   })
-      //   .then(function(response) {
-      //     console.log(response);
-      //   })
-      //   .catch(function(error) {
-      //     console.log(error.response);
-      //   });
-    }
+    axios
+      .put(`/notes/${activeNote.id}`, activeNote)
+      .then(response => {
+        this.fetchData();
+        console.log(response.data.text);
+      })
+      .catch(function(error) {
+        //console.log(error.response);
+      });
+  }
+  postData(data) {
+    axios
+      .post(`/notes`, {
+        text: data
+      })
+      .then(response => {
+        //console.log(response);
+        this.fetchData();
+      })
+      .catch(function(error) {
+        //console.log(error.response);
+      });
   }
   componentDidMount() {
     this.fetchData();
@@ -68,26 +83,74 @@ export default class App extends Component {
       //this.updateData();
     }, 1000);
   }
-  handleNoteChange(note) {
-    // console.log(note);
+  setId(id) {
+    this.setState({
+      activeNote: { ...this.state.activeNote, ['id']: id }
+    });
+  }
+  sideNoteLinkClick(note, i) {
+    //IF its a new id save it to state
+    if (i === undefined) {
+      i = this.state.activeNote.id;
+    }
+    //==console.log(`Id is : ${id}`);
+    //console.log(`Note is`, note);
+    let activeNote = Object.assign({}, this.state.activeNote); //creating copy of object
+    activeNote = note; //updating value
+    //this.setState({jasper});
     this.setState(
-      {
-        activeNote: { text: note }
-      },
-      () => {
-        console.log(this.state.activeNote);
-      }
+      { activeNote }, //id: i }
+      () =>
+        this.state.activeNote.text === ''
+          ? this.postData(activeNote)
+          : console.log('Update')
     );
-    // console.log(this.state.activeNote);
+  }
+  handleNoteChange(note, i) {
+    let activeNote = Object.assign({}, this.state.activeNote); //creating copy of object
+    activeNote.text = note.text; //updating value
+    //console.log(activeNote);
+    this.setState(
+      { activeNote }, //id: i }
+      () =>
+        this.state.activeNote.text === ''
+          ? this.postData(activeNote)
+          : this.updateData()
+    );
+  }
+  createNote(note) {}
+  NoteInputFocus(note) {
+    //console.log(...this.state.notes.data);
+    //Render New note at the top of the list
+    // this.setState(
+    //   {
+    //     notes: { text: { ...this.state.notes.text } }
+    //   },
+    //   () => {
+    //     console.log(this.state.notes.text);
+    //   }
+    // );
+    //this.createNote(note);
+    //console.log(note);
   }
   render() {
-    const { loaded } = this.state;
+    const { loaded, activeNote, notes } = this.state;
+    var note;
+    note === undefined ? '' : console.log(Object.getOwnPropertyNames(note));
+
+    note = notes[activeNote.id - 1];
+    //note !== undefined && console.log(note['text']);
+
+    //console.log(note);
+
     return (
       <div className="App">
         {loaded ? (
           <Sidebar
-            handleNoteChange={this.handleNoteChange}
-            notes={this.state.notes}
+            onClick={this.sideNoteLinkClick}
+            notes={notes}
+            id={activeNote}
+            setId={this.setId}
           />
         ) : (
           <div className="fl w-20 br b--black-05 vh-100 sidebar">
@@ -98,6 +161,7 @@ export default class App extends Component {
           </div>
         )}
         <Main
+          onFocus={this.NoteInputFocus}
           updateData={this.updateData}
           handleNoteChange={this.handleNoteChange}
           activeNote={this.state.activeNote}
