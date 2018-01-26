@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 
 export default class Sidebar extends Component {
   constructor(props) {
@@ -19,12 +20,13 @@ export default class Sidebar extends Component {
           {this.props.notes.map(function(note) {
             return (
               <li key={note.id}>
-                <button
-                  className="link pointer w-100 bb-0 br-0 bl-0 bg-transparent bt b--black-05 pa2 hover-white"
+                <Link
+                  to={`/${note.id}`}
+                  className="black link tl pointer w-100 bn bg-transparent  pa2 hover-white"
                   onClick={() => this.onClick(note, note.id)}
                 >
                   {note.name}
-                </button>
+                </Link>
               </li>
             );
           }, this)}

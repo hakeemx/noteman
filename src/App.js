@@ -3,6 +3,8 @@ import './App.css';
 import Sidebar from './components/Sidebar/';
 import Main from './components/Main/';
 import axios from 'axios';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { posix } from 'path';
 
 export default class App extends Component {
   constructor(props) {
@@ -76,12 +78,24 @@ export default class App extends Component {
       });
   }
   componentDidMount() {
+    var that = this;
     this.fetchData();
+
+    //Get post ID from url
+    var postId = window.location.pathname.split('/').pop();
+
+    //If user is on homePage
+    postId !== '' && this.loadCurrentNote(postId);
 
     //Update every 10 seconds
     setInterval(() => {
       //this.updateData();
     }, 1000);
+
+    //If id in url show when page is shown
+    this.state.activeNote.id === ''
+      ? console.log(postId)
+      : console.log('not empty');
   }
   setId(id) {
     this.setState({
@@ -133,6 +147,18 @@ export default class App extends Component {
     //this.createNote(note);
     //console.log(note);
   }
+  loadCurrentNote(id) {
+    axios
+      .get(`notes/${id}`)
+      .then(response => {
+        this.setState({
+          activeNote: response.data
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }
   render() {
     const { loaded, activeNote, notes } = this.state;
     var note;
@@ -144,29 +170,37 @@ export default class App extends Component {
     //console.log(note);
 
     return (
-      <div className="App">
-        {loaded ? (
-          <Sidebar
-            onClick={this.sideNoteLinkClick}
-            notes={notes}
-            id={activeNote}
-            setId={this.setId}
+      <Router>
+        <div className="App">
+          {console.log(this.props)}
+          {loaded ? (
+            <Sidebar
+              onClick={this.sideNoteLinkClick}
+              notes={notes}
+              id={activeNote}
+              setId={this.setId}
+            />
+          ) : (
+            <div className="fl w-20 br b--black-05 vh-100 sidebar">
+              <ul className="pa0">
+                <h2>Notes</h2>
+                <li>No data</li>
+              </ul>
+            </div>
+          )}
+          <Main
+            onFocus={this.NoteInputFocus}
+            updateData={this.updateData}
+            handleNoteChange={this.handleNoteChange}
+            activeNote={this.state.activeNote}
           />
-        ) : (
-          <div className="fl w-20 br b--black-05 vh-100 sidebar">
-            <ul className="pa0">
-              <h2>Notes</h2>
-              <li>No data</li>
-            </ul>
-          </div>
-        )}
-        <Main
-          onFocus={this.NoteInputFocus}
-          updateData={this.updateData}
-          handleNoteChange={this.handleNoteChange}
-          activeNote={this.state.activeNote}
-        />
-      </div>
+          <Route exact path="/" render={() => <h1>Hello</h1>} />
+          <Route
+            path="/:id"
+            //render={props => {this.loadCurrentNote(props.match.params.id)},return null}
+          />
+        </div>
+      </Router>
     );
   }
 }
