@@ -3,8 +3,8 @@ import './App.css';
 import Sidebar from './components/Sidebar/';
 import Main from './components/Main/';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import { posix } from 'path';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+//import { posix } from 'path';
 
 export default class App extends Component {
   constructor(props) {
@@ -65,12 +65,13 @@ export default class App extends Component {
       });
   }
   postData(data) {
+    alert('POST');
     axios
       .post(`/notes`, {
         text: data
       })
       .then(response => {
-        //console.log(response);
+        console.log(response);
         this.fetchData();
       })
       .catch(function(error) {
@@ -78,7 +79,6 @@ export default class App extends Component {
       });
   }
   componentDidMount() {
-    var that = this;
     this.fetchData();
 
     //Get post ID from url
@@ -126,10 +126,7 @@ export default class App extends Component {
     //console.log(activeNote);
     this.setState(
       { activeNote }, //id: i }
-      () =>
-        this.state.activeNote.text === ''
-          ? this.postData(activeNote)
-          : this.updateData()
+      () => this.updateData()
     );
   }
   createNote(note) {}
@@ -194,7 +191,7 @@ export default class App extends Component {
             handleNoteChange={this.handleNoteChange}
             activeNote={this.state.activeNote}
           />
-          <Route exact path="/" render={() => <h1>Hello</h1>} />
+          <Route exact path="/" />
           <Route
             path="/:id"
             //render={props => {this.loadCurrentNote(props.match.params.id)},return null}
